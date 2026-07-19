@@ -17,10 +17,11 @@ Yahoo Finance のデータを使い、日本の主要株価を一覧表示する
 ## ファイル構成
 
 ```
-index.html           ダッシュボード本体 (生成物・データ埋め込み済み)
-update.py            最新データ取得 + 再生成を一括で行うスクリプト (PEP 723 / yfinance)
-build_dashboard.py   data/*.csv から index.html を再生成するスクリプト (PEP 723 / 標準ライブラリのみ)
-data/*.csv           Yahoo Finance から取得した日次データ (直近3ヶ月)
+index.html                       ダッシュボード本体 (生成物・データ埋め込み済み)
+update.py                        最新データ取得 + 再生成を一括で行うスクリプト (PEP 723 / yfinance)
+build_dashboard.py               data/*.csv から index.html を再生成するスクリプト (PEP 723 / 標準ライブラリのみ)
+data/*.csv                       Yahoo Finance から取得した日次データ (直近3ヶ月)
+.github/workflows/update.yml     データ自動更新ワークフロー (GitHub Actions)
 ```
 
 ## 使い方
@@ -65,10 +66,20 @@ uv run update.py
 uv run build_dashboard.py
 ```
 
-**自動更新 (GitHub Actions)**: `.github/workflows/update.yml` により、平日 18:00 JST
-(東証大引け後) に `uv run update.py` を自動実行し、変更があれば bot がコミット & プッシュする。
-GitHub の Actions タブから手動実行 (workflow_dispatch) も可能。
+### 自動更新 (GitHub Actions)
+
+`.github/workflows/update.yml` により、データ更新を定期自動実行する。
+
+- **スケジュール**: 平日 18:00 JST (東証大引け後)。cron は UTC 指定 (`0 9 * * 1-5`)
+- **処理内容**: `uv run update.py` を実行し、`data/` と `index.html` に変更があれば
+  `github-actions[bot]` が「データ更新 (YYYY-MM-DD)」というメッセージでコミット & プッシュ。
+  変更がない場合 (休日・取得失敗時など) はコミットせず終了
+- **手動実行**: GitHub の Actions タブ →「データ更新」→ Run workflow、
+  または `gh workflow run update.yml`
+
 ※ プライベートリポジトリのため Actions の利用時間を消費する (1回あたり約1〜2分)。
+※ `astral-sh/setup-uv` は浮動メジャータグ (`v8` 等) が存在しないため、
+ワークフローではフルバージョン (`v8.3.2`) にピン留めしている。
 
 ## データ仕様
 
@@ -85,7 +96,10 @@ GitHub の Actions タブから手動実行 (workflow_dispatch) も可能。
 ### 2026-07-19 — GitHub Actions による自動更新
 
 - 平日 18:00 JST に `uv run update.py` を実行し、変更を自動コミット & プッシュする
-  ワークフロー (`.github/workflows/update.yml`) を追加
+  ワークフロー (`.github/workflows/update.yml`) を追加 (手動実行での動作確認済み)
+- `astral-sh/setup-uv` を `v8.3.2` にピン留め (浮動メジャータグ不在のため) 、
+  cache-dependency-glob を PEP 723 用に設定
+- `.gitignore` を追加 (`__pycache__` 等を除外)
 - README のデータ更新手順を拡充 (前提・手順・確認方法・注意)
 
 ### 2026-07-19 — PEP 723 / uv 対応
