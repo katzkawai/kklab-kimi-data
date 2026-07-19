@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
-"""data/*.csv (Yahoo Finance 日次データ) から日本株ダッシュボード index.html を生成する。"""
+# /// script
+# requires-python = ">=3.11"
+# dependencies = []
+# ///
+"""data/*.csv (Yahoo Finance 日次データ) から日本株ダッシュボード index.html を生成する。
+
+使い方: uv run build_dashboard.py
+"""
 
 import csv
 import json

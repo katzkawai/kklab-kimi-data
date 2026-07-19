@@ -18,7 +18,8 @@ Yahoo Finance のデータを使い、日本の主要株価を一覧表示する
 
 ```
 index.html           ダッシュボード本体 (生成物・データ埋め込み済み)
-build_dashboard.py   data/*.csv から index.html を再生成するスクリプト (Python 3 標準ライブラリのみ)
+update.py            最新データ取得 + 再生成を一括で行うスクリプト (PEP 723 / yfinance)
+build_dashboard.py   data/*.csv から index.html を再生成するスクリプト (PEP 723 / 標準ライブラリのみ)
 data/*.csv           Yahoo Finance から取得した日次データ (直近3ヶ月)
 ```
 
@@ -35,12 +36,39 @@ python3 -m http.server 8931 --bind 127.0.0.1
 
 ### データ更新
 
-1. kimi-datasource (yahoo_finance) で各銘柄の直近3ヶ月分を取得し、`data/` に CSV として保存
-2. 再生成:
+**前提**: `uv` が必要。未インストールの場合:
 
 ```bash
-python3 build_dashboard.py
+curl -LsSf https://astral.sh/uv/install.sh | sh
 ```
+
+**手順**: プロジェクト直下で以下を実行するだけ。
+
+```bash
+uv run update.py
+```
+
+1. yfinance で全12銘柄の直近3ヶ月分 (日足) を取得し、`data/*.csv` を上書き
+2. `build_dashboard.py` が自動で呼ばれ、最新データを埋め込んだ `index.html` を再生成
+
+両スクリプトは PEP 723 形式 (インラインメタデータ) のため、uv が依存パッケージ
+(yfinance 等) を自動で用意する。事前の `pip install` や venv 構築は不要。
+
+**更新後の確認**: ブラウザで `index.html` を再読み込みし、ヘッダーの「データ基準日」が
+最新営業日になっていることを確認する。
+
+**注意**:
+- 取得に失敗した銘柄は既存 CSV を維持したまま再生成される (警告が表示される)
+- 既存 CSV からの再生成だけ行う場合 (データ取得なし):
+
+```bash
+uv run build_dashboard.py
+```
+
+**自動更新 (GitHub Actions)**: `.github/workflows/update.yml` により、平日 18:00 JST
+(東証大引け後) に `uv run update.py` を自動実行し、変更があれば bot がコミット & プッシュする。
+GitHub の Actions タブから手動実行 (workflow_dispatch) も可能。
+※ プライベートリポジトリのため Actions の利用時間を消費する (1回あたり約1〜2分)。
 
 ## データ仕様
 
@@ -53,6 +81,17 @@ python3 build_dashboard.py
 ※ AI 生成データのため、投資判断には使用しないこと。
 
 ## 更新履歴
+
+### 2026-07-19 — GitHub Actions による自動更新
+
+- 平日 18:00 JST に `uv run update.py` を実行し、変更を自動コミット & プッシュする
+  ワークフロー (`.github/workflows/update.yml`) を追加
+- README のデータ更新手順を拡充 (前提・手順・確認方法・注意)
+
+### 2026-07-19 — PEP 723 / uv 対応
+
+- `update.py` を追加 (yfinance でデータ取得 → 再生成を `uv run update.py` 一発で実行)
+- 両スクリプトを PEP 723 形式 (インラインメタデータ) に変更し、`uv run` 起動に対応
 
 ### 2026-07-19 — 初版
 
