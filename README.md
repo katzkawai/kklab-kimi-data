@@ -28,6 +28,13 @@ data/*.csv                       Yahoo Finance から取得した日次データ
 
 ### 閲覧
 
+**オンライン (GitHub Pages)**: https://katzkawai.org/kklab-kimi-data/
+`main` ブランチから配信。プッシュのたびに自動再デプロイされるため、
+Actions によるデータ更新も自動で反映される。リポジトリはプライベートだが、
+公開サイトは誰でも閲覧可能な点に注意。
+
+**ローカル**:
+
 ```bash
 python3 -m http.server 8931 --bind 127.0.0.1
 # → http://127.0.0.1:8931/index.html
@@ -92,6 +99,12 @@ uv run build_dashboard.py
 ※ AI 生成データのため、投資判断には使用しないこと。
 
 ## 更新履歴
+
+### 2026-07-19 — GitHub Pages で公開
+
+- GitHub Pages (main ブランチ / ルート) を有効化し、
+  https://katzkawai.org/kklab-kimi-data/ で公開 (HTTPS 強制)
+- プッシュのたびに自動再デプロイされるため、Actions のデータ更新も自動反映される
 
 ### 2026-07-19 — GitHub Actions による自動更新
 
