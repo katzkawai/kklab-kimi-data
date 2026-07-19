@@ -30,8 +30,7 @@ data/*.csv                       Yahoo Finance から取得した日次データ
 
 **オンライン (GitHub Pages)**: https://katzkawai.org/kklab-kimi-data/
 `main` ブランチから配信。プッシュのたびに自動再デプロイされるため、
-Actions によるデータ更新も自動で反映される。リポジトリはプライベートだが、
-公開サイトは誰でも閲覧可能な点に注意。
+Actions によるデータ更新も自動で反映される。リポジトリ・サイトともに公開。
 
 **ローカル**:
 
@@ -84,7 +83,7 @@ uv run build_dashboard.py
 - **手動実行**: GitHub の Actions タブ →「データ更新」→ Run workflow、
   または `gh workflow run update.yml`
 
-※ プライベートリポジトリのため Actions の利用時間を消費する (1回あたり約1〜2分)。
+※ パブリックリポジトリのため、GitHub ホストランナーの Actions 利用は無料。
 ※ `astral-sh/setup-uv` は浮動メジャータグ (`v8` 等) が存在しないため、
 ワークフローではフルバージョン (`v8.3.2`) にピン留めしている。
 
@@ -99,6 +98,11 @@ uv run build_dashboard.py
 ※ AI 生成データのため、投資判断には使用しないこと。
 
 ## 更新履歴
+
+### 2026-07-19 — リポジトリを公開
+
+- リポジトリの可視性をプライベートからパブリックに変更
+- 公開に伴い Actions の注記を更新 (パブリックリポジトリはホストランナー無料)
 
 ### 2026-07-19 — GitHub Pages で公開
 
